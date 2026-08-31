@@ -1,3 +1,4 @@
+import { withBasePath } from "@/lib/base-path";
 import { SPOT_IMAGE_MANIFEST } from "./spot-images";
 
 const CITY_VISTAS = [
@@ -18,9 +19,11 @@ export function getPhotoFieldImages(): string[] {
   const out: string[] = [];
 
   const add = (url: string | undefined) => {
-    if (!url || seen.has(url)) return;
-    seen.add(url);
-    out.push(url);
+    if (!url) return;
+    const prefixed = withBasePath(url);
+    if (seen.has(prefixed)) return;
+    seen.add(prefixed);
+    out.push(prefixed);
   };
 
   for (const url of CITY_VISTAS) add(url);

@@ -1,3 +1,4 @@
+import { withBasePath } from "@/lib/base-path";
 import type { Bilingual } from "./types";
 
 // ============================================================
@@ -98,6 +99,10 @@ export const WECHAT_COVERAGE: MediaCoverageItem[] = [
     image: "/spots/guangan-museum/06.jpg",
   },
 ];
+
+for (const item of [...NATIONAL_MEDIA, ...WECHAT_COVERAGE]) {
+  if (item.image) item.image = withBasePath(item.image);
+}
 
 export function getFeaturedMedia(): MediaCoverageItem[] {
   return NATIONAL_MEDIA;

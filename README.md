@@ -4,7 +4,9 @@
 
 ## 在线预览
 
-静态站点，构建后可部署至 GitHub Pages、Vercel 或任意静态托管。
+https://cennyk-learner.github.io/red-journey/
+
+静态导出（`npm run build` → `out/`），由 GitHub Actions 发布到本仓库的 GitHub Pages。项目页路径为 `/red-journey/`；本地 `next dev` 仍走站点根路径。
 
 ## 技术栈
 

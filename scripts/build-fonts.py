@@ -166,7 +166,7 @@ def stage_lxgw() -> None:
     for name in used:
         shutil.copyfile(LXGW_PKG / "files" / name, files_out / name)
 
-    css = css.replace("url('./files/", "url('/fonts/lxgw/files/")
+    # Keep relative urls so GitHub project Pages (/<repo>/) resolves fonts.
     (LXGW_OUT / "lxgw-wenkai-screen.css").write_text(css, encoding="utf-8")
     shutil.copyfile(LXGW_PKG / "OFL.txt", LXGW_OUT / "OFL.txt")
 

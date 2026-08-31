@@ -5,6 +5,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Logotype, MeanderRule } from "@/components/ornament";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { ui, t } from "@/i18n/ui";
+import { withBasePath } from "@/lib/base-path";
 import { EASE_OUT_EXPO } from "@/lib/motion";
 
 // ============================================================
@@ -84,7 +85,7 @@ function NavLink({
   }
   return (
     <a
-      href={href ?? "#"}
+      href={href ? withBasePath(href) : "#"}
       className="rule-hover pointer-events-auto whitespace-nowrap font-serif text-[13px] tracking-[0.18em] transition-opacity duration-300 hover:opacity-100"
       style={{ color, opacity: 0.78 }}
     >

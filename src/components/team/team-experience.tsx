@@ -8,6 +8,7 @@ import { TeamMemberDetail } from "@/components/team/team-member-detail";
 import { TEAM_ALL } from "@/data/team";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { ui, t } from "@/i18n/ui";
+import { withBasePath } from "@/lib/base-path";
 import { EASE_OUT_EXPO } from "@/lib/motion";
 
 interface TeamExperienceProps {
@@ -37,10 +38,10 @@ export function TeamExperience({ onBack }: TeamExperienceProps): ReactNode {
         loop
         muted
         playsInline
-        poster="/team/hero-poster.jpg"
+        poster={withBasePath("/team/hero-poster.jpg")}
         className="absolute inset-0 h-full w-full object-cover"
       >
-        <source src="/team/hero.mp4" type="video/mp4" />
+        <source src={withBasePath("/team/hero.mp4")} type="video/mp4" />
       </video>
 
       <div

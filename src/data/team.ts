@@ -1,3 +1,4 @@
+import { withBasePath } from "@/lib/base-path";
 import type { TeamMember } from "./types";
 
 // ============================================================
@@ -200,6 +201,10 @@ function sortByName(members: TeamMember[]): TeamMember[] {
 }
 
 /** 指导老师 → 队长 → 广安队员（字母序）→ 百色队员（字母序） */
+for (const member of [...TEAM_ADVISORS, ...TEAM_GUANGAN, ...TEAM_BAISE]) {
+  member.avatar = withBasePath(member.avatar);
+}
+
 export const TEAM_ALL: TeamMember[] = [
   ...TEAM_ADVISORS,
   ...TEAM_GUANGAN.filter((m) => m.isCaptain),

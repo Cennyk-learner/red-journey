@@ -10,6 +10,7 @@ import {
 import { MeanderRule } from "@/components/ornament";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { ui, t } from "@/i18n/ui";
+import { withBasePath } from "@/lib/base-path";
 import { useReducedMotion } from "@/lib/motion";
 
 // ============================================================
@@ -20,8 +21,10 @@ import { useReducedMotion } from "@/lib/motion";
 // 滚动只负责淡入与轻微抬升,不改变画幅形状。
 // ============================================================
 
-const VIDEO_SRC = "/team/test-vid.mp4";
-const VIDEO_POSTER = "/spots/deng-xiaoping-former-residence/01.jpg";
+const VIDEO_SRC = withBasePath("/team/test-vid.mp4");
+const VIDEO_POSTER = withBasePath(
+  "/spots/deng-xiaoping-former-residence/01.jpg",
+);
 
 function ShowcaseVideo({
   videoRef,

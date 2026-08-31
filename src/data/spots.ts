@@ -1,3 +1,4 @@
+import { withBasePath } from "@/lib/base-path";
 import type { Spot } from "./types";
 import { getSpotImages } from "./spot-images";
 // 四川安排(广安): 故里研学 → 思源广场 → 非遗体验馆 → 市博物馆
@@ -512,6 +513,13 @@ export const SPOTS: Spot[] = [
     date: "2026-08-22",
   },
 ];
+
+for (const spot of SPOTS) {
+  spot.images = spot.images.map(withBasePath);
+  for (const section of spot.body) {
+    if (section.image) section.image = withBasePath(section.image);
+  }
+}
 
 export function getVisibleSpots(): Spot[] {
   return SPOTS.filter((s) => s.visible).sort((a, b) => {

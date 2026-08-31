@@ -9,15 +9,7 @@
    层次靠材质与细线建立,不靠磨砂玻璃和圆角阴影。
    ============================================================ */
 
-/* 马善政毛笔楷书(OFL)—— 子集见 scripts/build-fonts.py,
-   只含 display-glyphs.txt 列出的字;缺字自动回落思源宋体。 */
-@font-face {
-  font-family: "Ma Shan Zheng Display";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/fonts/ma-shan-zheng-display.woff2") format("woff2");
-}
+/* 马善政毛笔楷书(OFL)—— @font-face 在 layout.tsx,以便 GitHub Pages basePath 前缀。 */
 
 :root {
   /* ── 玄墨:沉浸段落的地 ── */

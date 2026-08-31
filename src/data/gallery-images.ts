@@ -1,3 +1,4 @@
+import { withBasePath } from "@/lib/base-path";
 import { SPOT_IMAGE_MANIFEST } from "./spot-images";
 
 // Spots that only contain fallback copies of other sites' photos
@@ -18,9 +19,10 @@ export function getGalleryImages(): string[] {
     if (FALLBACK_ONLY_SPOTS.has(spotId)) continue;
     for (const url of urls) {
       if (url.includes("/team/")) continue;
-      if (seen.has(url)) continue;
-      seen.add(url);
-      out.push(url);
+      const prefixed = withBasePath(url);
+      if (seen.has(prefixed)) continue;
+      seen.add(prefixed);
+      out.push(prefixed);
     }
   }
 

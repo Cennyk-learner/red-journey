@@ -1,3 +1,4 @@
+import { withBasePath } from "@/lib/base-path";
 import type { City } from "./types";
 
 // ============================================================
@@ -36,6 +37,11 @@ export const CITIES: City[] = [
     sceneryImage: "/cities/baise/scenery.webp",
   },
 ];
+
+for (const city of CITIES) {
+  city.heroImage = withBasePath(city.heroImage);
+  if (city.sceneryImage) city.sceneryImage = withBasePath(city.sceneryImage);
+}
 
 export function getCity(id: string): City | undefined {
   return CITIES.find((c) => c.id === id);
