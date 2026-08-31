@@ -13,6 +13,17 @@ import type { Spot } from "@/data/types";
 // 站点 StationSeal —— 淡影剪影 + 朱砂钤印 + 竖排题签
 // ============================================================
 
+/** Map card-oriented imageFocus into seal-safe framing (head below stamp). */
+function sealBackgroundPosition(imageFocus?: string): string {
+  if (!imageFocus) return "50% 28%";
+  const match = imageFocus.trim().match(/^([\d.]+%)\s+([\d.]+%)$/);
+  if (!match) return imageFocus;
+  const y = Number.parseFloat(match[2]);
+  // Top-pinned focuses put faces under the seal — nudge downward for this card.
+  if (y <= 12) return `${match[1]} 28%`;
+  return imageFocus;
+}
+
 interface StationSealProps {
   spot: Spot;
   side: "above" | "below";
@@ -43,28 +54,6 @@ export function StationSeal({
       style={{ width: 220 }}
       aria-label={tr(spot.name)}
     >
-      {/* 淡影剪影:小卡弹出后仍保留,与题跋卡主图分层呈现 */}
-      {photo && (
-        <span
-          aria-hidden
-          className="pointer-events-none absolute left-1/2 top-[42%] -z-0 -translate-x-1/2 -translate-y-1/2"
-          style={{
-            width: 200,
-            height: 240,
-            backgroundImage: bgStack(photo),
-            backgroundSize: "cover",
-            backgroundPosition: spot.imageFocus ?? "center",
-            opacity: active ? 0.5 : 0.18,
-            filter: "grayscale(0.3) contrast(0.92) brightness(1.02)",
-            WebkitMaskImage:
-              "radial-gradient(ellipse 70% 65% at 50% 45%, #000 0%, #000 35%, transparent 78%)",
-            maskImage:
-              "radial-gradient(ellipse 70% 65% at 50% 45%, #000 0%, #000 35%, transparent 78%)",
-            transition: "opacity 0.5s ease",
-          }}
-        />
-      )}
-
       <div
         className="relative z-[1] flex items-center"
         style={{
@@ -72,12 +61,12 @@ export function StationSeal({
           gap: 14,
         }}
       >
-        {/* 钤印 */}
+        {/* 钤印 — keep above the silhouette so the stamp never covers faces */}
         <motion.span
           initial={false}
           animate={active ? { scale: 1, opacity: 1 } : { scale: 1.25, opacity: 0.28 }}
           transition={{ type: "spring", stiffness: 320, damping: 20 }}
-          className="relative block"
+          className="relative z-[2] block"
           style={{ filter: "drop-shadow(0 3px 6px rgba(139,26,32,0.28))" }}
         >
           <Seal text={sealText(spot.name.zh)} size={64} carve="yin" />
@@ -91,7 +80,7 @@ export function StationSeal({
           )}
         </motion.span>
 
-        {/* 题签:竖排中文独占一列,英文另起一行横排,绝不叠字 */}
+        {/* 题签 + 淡影：剪影只叠在题签区，避开朱砂钤印 */}
         <motion.div
           initial={false}
           animate={
@@ -100,15 +89,35 @@ export function StationSeal({
               : { opacity: 0, y: side === "above" ? 8 : -8 }
           }
           transition={{ duration: 0.5, delay: 0.18, ease: "easeOut" }}
-          className="flex flex-col items-center gap-2"
+          className="relative flex flex-col items-center gap-2"
         >
+          {photo && (
+            <span
+              aria-hidden
+              className="pointer-events-none absolute left-1/2 top-1/2 -z-0 -translate-x-1/2 -translate-y-1/2"
+              style={{
+                width: 200,
+                height: 220,
+                backgroundImage: bgStack(photo),
+                backgroundSize: "cover",
+                backgroundPosition: sealBackgroundPosition(spot.imageFocus),
+                opacity: active ? 0.5 : 0.18,
+                filter: "grayscale(0.3) contrast(0.92) brightness(1.02)",
+                WebkitMaskImage:
+                  "radial-gradient(ellipse 70% 65% at 50% 45%, #000 0%, #000 35%, transparent 78%)",
+                maskImage:
+                  "radial-gradient(ellipse 70% 65% at 50% 45%, #000 0%, #000 35%, transparent 78%)",
+                transition: "opacity 0.5s ease",
+              }}
+            />
+          )}
           <span
-            className="vertical font-serif text-[15px] font-medium text-ink"
+            className="relative z-[1] vertical font-serif text-[15px] font-medium text-ink"
             style={{ maxHeight: 200 }}
           >
             {spot.name.zh}
           </span>
-          <span className="en-caption max-w-[11rem] text-center text-[10px] leading-snug text-ink-faint">
+          <span className="relative z-[1] en-caption max-w-[11rem] text-center text-[10px] leading-snug text-ink-faint">
             {spot.name.en}
           </span>
         </motion.div>
