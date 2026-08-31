@@ -158,6 +158,9 @@ export function SpotDetailArchive({
                     alt=""
                     draggable={false}
                     className="absolute inset-0 h-full w-full object-cover"
+                    style={{
+                      objectPosition: spot.imageFocus ?? "50% 50%",
+                    }}
                   />
                 )}
                 <SpotSealRibbon nameZh={spot.name.zh} />

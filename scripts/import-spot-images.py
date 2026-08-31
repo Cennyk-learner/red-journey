@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Import field photos from 素材 into public/spots and generate spot-images.ts."""
+"""Import field photos from 素材 into public/spots and generate spot-images.ts.
+
+Rules:
+- Filename keywords must match spot 1:1 (more specific patterns first).
+- Never copy one Baise spot's photos into another.
+- Prefer confirmed names over 「推测」 when both exist.
+"""
 
 from __future__ import annotations
 
@@ -26,29 +32,30 @@ from _paths import ROOT, assets_dir
 ASSETS = assets_dir()
 OUT = ROOT / "public" / "spots"
 TS_OUT = ROOT / "src" / "data" / "spot-images.ts"
+USER_STATUE = ROOT / "public" / "assets" / "deng-statue.jpg"
 
 MAX_PER_SPOT = 24
 MAX_EDGE = 1600
 JPEG_QUALITY = 82
 
-# Filename keyword → spot id (first match wins)
+# More-specific keywords first. Never use bare 「博物馆」.
 PATTERNS: list[tuple[str, list[str]]] = [
-    ("deng-xiaoping-former-residence", ["邓小平故里"]),
+    ("deng-xiaoping-former-residence", ["邓小平故里", "小平故里", "故里会谈"]),
     ("siyuan-square", ["思源广场"]),
     ("intangible-heritage-experience", ["非遗文化体验馆", "非遗体验馆"]),
-    ("guangan-museum", ["广安市博物馆", "博物馆"]),
+    ("guangan-museum", ["广安市博物馆", "博物馆 ("]),
     ("baise-uprising-monument-park", ["百色起义纪念园"]),
     ("baise-uprising-memorial", ["百色起义纪念馆"]),
-    ("baise-integrity-education-base", ["廉政教育基地", "廉政教育"]),
+    ("baise-integrity-education-base", ["廉政教育基地", "廉政教育", "铜鼓楼"]),
     ("guangdong-guild-hall", ["粤东会馆"]),
     ("qingfeng-lou", ["清风楼"]),
     ("youjiang-ethnic-museum", ["右江民族博物馆"]),
     ("jiefang-street", ["解放街"]),
-    ("guangxi-labor-first-middle-school", ["劳动第一中学", "劳动一中"]),
+    ("guangxi-labor-first-middle-school", ["劳动第一中学", "劳动一中", "广西劳动第一中学"]),
     ("lingzhou-guild-hall", ["灵洲会馆", "灵州会馆"]),
 ]
 
-# Combined folder: split by index
+# Combined folders: first half → A, second half → B (stable, no cross-spot reuse elsewhere)
 SPLIT_RULES: dict[str, tuple[str, str]] = {
     "右江民族博物馆与解放街": ("youjiang-ethnic-museum", "jiefang-street"),
     "劳动第一中学旧址与老街": (
@@ -62,13 +69,21 @@ def classify(name: str) -> str | None:
     for combined, (a, b) in SPLIT_RULES.items():
         if combined in name:
             m = re.search(r"_(\d+)\.(jpg|jpeg|heic)$", name, re.I)
-            idx = int(m.group(1)) if m else 0
+            if not m:
+                m = re.search(r"\((\d+)\)\.(jpg|jpeg|heic)$", name, re.I)
+            idx = int(m.group(1)) if m else 1
             return a if idx % 2 == 1 else b
     for spot_id, keys in PATTERNS:
         for k in keys:
             if k in name:
                 return spot_id
     return None
+
+
+def sort_key(path: Path) -> tuple[int, str]:
+    """Prefer non-推测, then natural filename order."""
+    speculated = 1 if "推测" in path.name else 0
+    return (speculated, path.name)
 
 
 def save_image(src: Path, dest: Path) -> bool:
@@ -90,100 +105,47 @@ def save_image(src: Path, dest: Path) -> bool:
         return False
 
 
-def main() -> None:
-    buckets: dict[str, list[Path]] = {p[0]: [] for p in PATTERNS}
+def ensure_deng_statue(manifest: dict[str, list[str]]) -> None:
+    """Keep formal statue as 01.jpg for 小平故里."""
+    if not USER_STATUE.is_file():
+        return
+    spot_id = "deng-xiaoping-former-residence"
+    dest_dir = OUT / spot_id
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    existing = sorted(dest_dir.glob("*.jpg"))
+    # Shift existing down if needed, write statue as 01
+    temp_paths: list[Path] = []
+    for i, src in enumerate(existing, start=2):
+        tmp = dest_dir / f"_tmp_{i:02d}.jpg"
+        shutil.copy2(src, tmp)
+        temp_paths.append(tmp)
+        src.unlink()
+    statue_dest = dest_dir / "01.jpg"
+    try:
+        with Image.open(USER_STATUE) as im:
+            im = im.convert("RGB")
+            w, h = im.size
+            if max(w, h) > MAX_EDGE:
+                ratio = MAX_EDGE / max(w, h)
+                im = im.resize((int(w * ratio), int(h * ratio)), Image.Resampling.LANCZOS)
+            im.save(statue_dest, "JPEG", quality=85, optimize=True)
+    except Exception as exc:
+        print(f"  statue failed: {exc}")
+        return
 
-    for folder in ["四川", "广西"]:
-        base = ASSETS / folder
-        if not base.is_dir():
+    paths = [f"/spots/{spot_id}/01.jpg"]
+    for i, tmp in enumerate(temp_paths, start=2):
+        if i > MAX_PER_SPOT:
+            tmp.unlink(missing_ok=True)
             continue
-        for f in sorted(base.iterdir()):
-            if f.suffix.lower() not in (".jpg", ".jpeg", ".heic"):
-                continue
-            spot = classify(f.name)
-            if spot and len(buckets[spot]) < MAX_PER_SPOT:
-                buckets[spot].append(f)
+        final = dest_dir / f"{i:02d}.jpg"
+        tmp.rename(final)
+        paths.append(f"/spots/{spot_id}/{i:02d}.jpg")
+    manifest[spot_id] = paths
+    print(f"{spot_id}: statue pinned as 01.jpg ({len(paths)} total)")
 
-    manifest: dict[str, list[str]] = {}
-    if OUT.exists():
-        shutil.rmtree(OUT)
-    OUT.mkdir(parents=True)
 
-    for spot_id, files in buckets.items():
-        paths: list[str] = []
-        for i, src in enumerate(files, start=1):
-            dest = OUT / spot_id / f"{i:02d}.jpg"
-            if save_image(src, dest):
-                paths.append(f"/spots/{spot_id}/{i:02d}.jpg")
-        if paths:
-            manifest[spot_id] = paths
-            print(f"{spot_id}: {len(paths)} images")
-
-    def copy_subset(
-        from_id: str,
-        to_id: str,
-        start: int = 0,
-        count: int = 12,
-        replace: bool = False,
-    ) -> None:
-        src_paths = manifest.get(from_id, [])
-        if not src_paths:
-            return
-        if manifest.get(to_id) and not replace:
-            return
-        picked = src_paths[start : start + count]
-        if (OUT / to_id).exists():
-            shutil.rmtree(OUT / to_id)
-        manifest[to_id] = []
-        dest_dir = OUT / to_id
-        dest_dir.mkdir(parents=True, exist_ok=True)
-        for i, url in enumerate(picked, start=1):
-            src_file = ROOT / "public" / url.lstrip("/")
-            dest_file = dest_dir / f"{i:02d}.jpg"
-            if src_file.exists():
-                shutil.copy2(src_file, dest_file)
-                manifest[to_id].append(f"/spots/{to_id}/{i:02d}.jpg")
-        if manifest[to_id]:
-            print(f"{to_id}: {len(manifest[to_id])} images (from {from_id})")
-
-    if not manifest.get("baise-integrity-education-base"):
-        copy_subset("baise-uprising-memorial", "baise-integrity-education-base", 8, 12)
-    if not manifest.get("lingzhou-guild-hall"):
-        copy_subset("jiefang-street", "lingzhou-guild-hall", 0, 16)
-    if len(manifest.get("guangxi-labor-first-middle-school", [])) < 8:
-        copy_subset(
-            "youjiang-ethnic-museum",
-            "guangxi-labor-first-middle-school",
-            0,
-            12,
-            replace=True,
-        )
-
-    def seed_scenic(spot_id: str, webp_rel: str, count: int = 6) -> None:
-        if manifest.get(spot_id):
-            return
-        src_webp = ROOT / "public" / webp_rel.lstrip("/")
-        if not src_webp.is_file():
-            return
-        dest_dir = OUT / spot_id
-        dest_dir.mkdir(parents=True, exist_ok=True)
-        paths: list[str] = []
-        for i in range(1, count + 1):
-            dest = dest_dir / f"{i:02d}.jpg"
-            try:
-                with Image.open(src_webp) as im:
-                    im = im.convert("RGB")
-                    im.save(dest, "JPEG", quality=82, optimize=True)
-                paths.append(f"/spots/{spot_id}/{i:02d}.jpg")
-            except Exception as exc:
-                print(f"  seed {spot_id} skip: {exc}")
-                break
-        if paths:
-            manifest[spot_id] = paths
-            print(f"{spot_id}: {len(paths)} scenic images (from {webp_rel})")
-
-    # siyuan-square: run scripts/fetch-web-spot-images.py after import
-
+def write_manifest(manifest: dict[str, list[str]]) -> None:
     lines = [
         "// Auto-generated by scripts/import-spot-images.py — do not edit by hand",
         "",
@@ -198,6 +160,87 @@ def main() -> None:
     ]
     TS_OUT.write_text("\n".join(lines), encoding="utf-8")
     print(f"Written {TS_OUT}")
+
+
+def main() -> None:
+    buckets: dict[str, list[Path]] = {p[0]: [] for p in PATTERNS}
+
+    for folder in ["四川", "广西"]:
+        base = ASSETS / folder
+        if not base.is_dir():
+            print(f"missing assets folder: {base}")
+            continue
+        for f in sorted(base.iterdir(), key=sort_key):
+            if f.suffix.lower() not in (".jpg", ".jpeg", ".heic"):
+                continue
+            if "住宿" in f.name:
+                continue
+            spot = classify(f.name)
+            if spot and len(buckets[spot]) < MAX_PER_SPOT:
+                buckets[spot].append(f)
+
+    # Preserve web-only folders we won't refill from 素材 (copy to temp first)
+    preserve_ids = {"siyuan-square"}
+    preserved_bytes: dict[str, list[bytes]] = {}
+    for spot_id in preserve_ids:
+        src_dir = OUT / spot_id
+        if src_dir.is_dir():
+            blobs: list[bytes] = []
+            for f in sorted(src_dir.glob("*.jpg")):
+                blobs.append(f.read_bytes())
+            if blobs:
+                preserved_bytes[spot_id] = blobs
+
+    if OUT.exists():
+        shutil.rmtree(OUT)
+    OUT.mkdir(parents=True)
+
+    manifest: dict[str, list[str]] = {}
+
+    for spot_id, files in buckets.items():
+        paths: list[str] = []
+        for i, src in enumerate(files, start=1):
+            dest = OUT / spot_id / f"{i:02d}.jpg"
+            if save_image(src, dest):
+                paths.append(f"/spots/{spot_id}/{i:02d}.jpg")
+        if paths:
+            manifest[spot_id] = paths
+            print(f"{spot_id}: {len(paths)} images")
+        else:
+            print(f"{spot_id}: 0 images (need web fill)")
+
+    for spot_id, blobs in preserved_bytes.items():
+        dest_dir = OUT / spot_id
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        paths = []
+        for i, data in enumerate(blobs, start=1):
+            dest = dest_dir / f"{i:02d}.jpg"
+            dest.write_bytes(data)
+            paths.append(f"/spots/{spot_id}/{i:02d}.jpg")
+        manifest[spot_id] = paths
+        print(f"{spot_id}: {len(paths)} images (preserved)")
+
+    ensure_deng_statue(manifest)
+    write_manifest(manifest)
+
+    # Uniqueness self-check for Baise
+    print("\n=== Baise uniqueness check ===")
+    baise = [s for s, _ in PATTERNS if s.startswith("baise") or s in {
+        "guangdong-guild-hall", "qingfeng-lou", "youjiang-ethnic-museum",
+        "jiefang-street", "guangxi-labor-first-middle-school", "lingzhou-guild-hall",
+    }]
+    hashes: dict[str, list[str]] = {}
+    for spot_id in baise:
+        for f in sorted((OUT / spot_id).glob("*.jpg")) if (OUT / spot_id).exists() else []:
+            h = f.stat().st_size
+            hashes.setdefault(f"{h}", []).append(f"{spot_id}/{f.name}")
+    shared = {k: v for k, v in hashes.items() if len(v) > 1}
+    if shared:
+        print("WARNING: identical file sizes across spots (possible duplicates):")
+        for k, v in list(shared.items())[:10]:
+            print(f"  size={k}: {v}")
+    else:
+        print("OK: no identical sizes shared across Baise spot files")
 
 
 if __name__ == "__main__":

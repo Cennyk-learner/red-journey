@@ -46,6 +46,11 @@ export interface Spot {
   tags?: Bilingual[];
   body: SpotSection[];
   images: string[];
+  /**
+   * 主图 object-position / background-position（如 "50% 12%"）。
+   * 用于竖构图在横卡里时把焦点上移，避免裁掉头脸。
+   */
+  imageFocus?: string;
   /** 计划到访日期(可选),时间线展示用 */
   date?: string;
   /** 外部报道链接(如公众号推文、媒体报道) */

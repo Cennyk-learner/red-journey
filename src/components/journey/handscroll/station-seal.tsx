@@ -53,7 +53,7 @@ export function StationSeal({
             height: 240,
             backgroundImage: bgStack(photo),
             backgroundSize: "cover",
-            backgroundPosition: "center",
+            backgroundPosition: spot.imageFocus ?? "center",
             opacity: active ? 0.5 : 0.18,
             filter: "grayscale(0.3) contrast(0.92) brightness(1.02)",
             WebkitMaskImage:

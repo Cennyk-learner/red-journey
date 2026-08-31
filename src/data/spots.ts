@@ -45,6 +45,8 @@ export const SPOTS: Spot[] = [
       },
     ],
     images: ["/spots/deng-xiaoping-former-residence/01.jpg"],
+    // 竖构图铜像：横卡裁切时贴顶，避免挡住脸
+    imageFocus: "50% 0%",
     date: "2026-07-15",
   },
   {

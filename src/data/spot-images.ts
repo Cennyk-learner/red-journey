@@ -4,17 +4,27 @@ export const SPOT_IMAGE_MANIFEST: Record<string, string[]> = {
   "baise-integrity-education-base": [
     "/spots/baise-integrity-education-base/01.jpg",
     "/spots/baise-integrity-education-base/02.jpg",
-    "/spots/baise-integrity-education-base/03.jpg"
+    "/spots/baise-integrity-education-base/03.jpg",
+    "/spots/baise-integrity-education-base/04.jpg",
+    "/spots/baise-integrity-education-base/05.jpg",
+    "/spots/baise-integrity-education-base/06.jpg"
   ],
   "baise-uprising-memorial": [
     "/spots/baise-uprising-memorial/01.jpg",
     "/spots/baise-uprising-memorial/02.jpg",
-    "/spots/baise-uprising-memorial/03.jpg"
+    "/spots/baise-uprising-memorial/03.jpg",
+    "/spots/baise-uprising-memorial/04.jpg",
+    "/spots/baise-uprising-memorial/05.jpg"
   ],
   "baise-uprising-monument-park": [
     "/spots/baise-uprising-monument-park/01.jpg",
     "/spots/baise-uprising-monument-park/02.jpg",
-    "/spots/baise-uprising-monument-park/03.jpg"
+    "/spots/baise-uprising-monument-park/03.jpg",
+    "/spots/baise-uprising-monument-park/04.jpg",
+    "/spots/baise-uprising-monument-park/05.jpg",
+    "/spots/baise-uprising-monument-park/06.jpg",
+    "/spots/baise-uprising-monument-park/07.jpg",
+    "/spots/baise-uprising-monument-park/08.jpg"
   ],
   "deng-xiaoping-former-residence": [
     "/spots/deng-xiaoping-former-residence/01.jpg",
@@ -69,12 +79,18 @@ export const SPOT_IMAGE_MANIFEST: Record<string, string[]> = {
     "/spots/guangan-museum/24.jpg"
   ],
   "guangdong-guild-hall": [
-    "/spots/guangdong-guild-hall/01.jpg"
+    "/spots/guangdong-guild-hall/01.jpg",
+    "/spots/guangdong-guild-hall/02.jpg",
+    "/spots/guangdong-guild-hall/03.jpg",
+    "/spots/guangdong-guild-hall/04.jpg",
+    "/spots/guangdong-guild-hall/05.jpg",
+    "/spots/guangdong-guild-hall/06.jpg"
   ],
   "guangxi-labor-first-middle-school": [
     "/spots/guangxi-labor-first-middle-school/01.jpg",
     "/spots/guangxi-labor-first-middle-school/02.jpg",
-    "/spots/guangxi-labor-first-middle-school/03.jpg"
+    "/spots/guangxi-labor-first-middle-school/03.jpg",
+    "/spots/guangxi-labor-first-middle-school/04.jpg"
   ],
   "intangible-heritage-experience": [
     "/spots/intangible-heritage-experience/01.jpg",
@@ -105,17 +121,33 @@ export const SPOT_IMAGE_MANIFEST: Record<string, string[]> = {
   "jiefang-street": [
     "/spots/jiefang-street/01.jpg",
     "/spots/jiefang-street/02.jpg",
-    "/spots/jiefang-street/03.jpg"
+    "/spots/jiefang-street/03.jpg",
+    "/spots/jiefang-street/04.jpg",
+    "/spots/jiefang-street/05.jpg",
+    "/spots/jiefang-street/06.jpg",
+    "/spots/jiefang-street/07.jpg",
+    "/spots/jiefang-street/08.jpg"
   ],
   "lingzhou-guild-hall": [
     "/spots/lingzhou-guild-hall/01.jpg",
     "/spots/lingzhou-guild-hall/02.jpg",
-    "/spots/lingzhou-guild-hall/03.jpg"
+    "/spots/lingzhou-guild-hall/03.jpg",
+    "/spots/lingzhou-guild-hall/04.jpg",
+    "/spots/lingzhou-guild-hall/05.jpg",
+    "/spots/lingzhou-guild-hall/06.jpg",
+    "/spots/lingzhou-guild-hall/07.jpg",
+    "/spots/lingzhou-guild-hall/08.jpg",
+    "/spots/lingzhou-guild-hall/09.jpg",
+    "/spots/lingzhou-guild-hall/10.jpg",
+    "/spots/lingzhou-guild-hall/11.jpg"
   ],
   "qingfeng-lou": [
     "/spots/qingfeng-lou/01.jpg",
     "/spots/qingfeng-lou/02.jpg",
-    "/spots/qingfeng-lou/03.jpg"
+    "/spots/qingfeng-lou/03.jpg",
+    "/spots/qingfeng-lou/04.jpg",
+    "/spots/qingfeng-lou/05.jpg",
+    "/spots/qingfeng-lou/06.jpg"
   ],
   "siyuan-square": [
     "/spots/siyuan-square/01.jpg",
@@ -128,7 +160,12 @@ export const SPOT_IMAGE_MANIFEST: Record<string, string[]> = {
   "youjiang-ethnic-museum": [
     "/spots/youjiang-ethnic-museum/01.jpg",
     "/spots/youjiang-ethnic-museum/02.jpg",
-    "/spots/youjiang-ethnic-museum/03.jpg"
+    "/spots/youjiang-ethnic-museum/03.jpg",
+    "/spots/youjiang-ethnic-museum/04.jpg",
+    "/spots/youjiang-ethnic-museum/05.jpg",
+    "/spots/youjiang-ethnic-museum/06.jpg",
+    "/spots/youjiang-ethnic-museum/07.jpg",
+    "/spots/youjiang-ethnic-museum/08.jpg"
   ]
 };
 
