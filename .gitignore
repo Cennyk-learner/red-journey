@@ -1,0 +1,31 @@
+node_modules/
+.next/
+out/
+*.log
+.DS_Store
+tsconfig.tsbuildinfo
+next-env.d.ts
+.review/
+.backup-m4c-map/
+.backup-*/
+
+# Local dev screenshots (not for publication)
+/baise_view.png
+/huaying*.jpg
+/public/team/test-vid.mp4
+/public/team/hero-flag-test.mp4
+
+# Local secrets & editor
+.env
+.env.*
+!.env.example
+.cursor/
+
+# Raw member portraits (keep README + .gitkeep)
+scripts/seed/member-photos/*
+!scripts/seed/member-photos/.gitkeep
+!scripts/seed/member-photos/README.md
+
+# Python
+__pycache__/
+*.py[cod]

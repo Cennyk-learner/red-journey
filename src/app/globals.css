@@ -1,0 +1,393 @@
+@import "tailwindcss";
+
+/* ============================================================
+   红色足迹 Red Journey — 设计系统「玄墨 · 宣纸」
+   ------------------------------------------------------------
+   双调:沉浸段落(开场/长卷/抽屉)走玄墨暖黑,让实拍照片与朱砂发光;
+   阅读段落(正文/页脚/说明)走宣纸暖白,取国博的克制与权威。
+   两调共用同一套矿物颜料点缀(朱砂/琉璃黄/石青/石绿)与纹样。
+   层次靠材质与细线建立,不靠磨砂玻璃和圆角阴影。
+   ============================================================ */
+
+/* 马善政毛笔楷书(OFL)—— 子集见 scripts/build-fonts.py,
+   只含 display-glyphs.txt 列出的字;缺字自动回落思源宋体。 */
+@font-face {
+  font-family: "Ma Shan Zheng Display";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/ma-shan-zheng-display.woff2") format("woff2");
+}
+
+:root {
+  /* ── 玄墨:沉浸段落的地 ── */
+  --ink-ground: #17120f;
+  --ink-raise: #221a15;
+  --ink-deep: #0f0b09;
+
+  /* ── 宣纸:阅读段落的地 ── */
+  --rice: #faf6ee;
+  --paper: #f2ebdd;
+  --paper-deep: #e6dac4;
+
+  /* ── 矿物颜料点缀 ── */
+  --cinnabar: #b5232b; /* 宫墙朱砂,主强调 */
+  --cinnabar-deep: #8b1a20;
+  --vermilion: #d8433a; /* 朱红,亮端 */
+  --glaze: #c89b3c; /* 琉璃黄 */
+  --glaze-bright: #e0b84e;
+  --mineral-blue: #3e6b8a; /* 石青 */
+  --mineral-green: #5e8c74; /* 石绿 */
+  --muted-violet: #8a88a8; /* 国博灰紫,英文与次要信息 */
+
+  /* ── 文字:宣纸上 ── */
+  --ink: #1c1512;
+  --ink-dim: rgba(28, 21, 18, 0.62);
+  --ink-faint: rgba(28, 21, 18, 0.36);
+
+  /* ── 文字:玄墨上 ── */
+  --rice-text: #f3ece0;
+  --rice-dim: rgba(243, 236, 224, 0.66);
+  --rice-faint: rgba(243, 236, 224, 0.38);
+
+  /* ── 界线:细、硬、无渐变 ── */
+  --rule: rgba(28, 21, 18, 0.14);
+  --rule-strong: rgba(28, 21, 18, 0.26);
+  --rule-invert: rgba(243, 236, 224, 0.18);
+  --rule-invert-strong: rgba(243, 236, 224, 0.34);
+
+  /* ── 兼容旧令牌名(逐步淘汰,勿在新代码里用) ── */
+  --bg: var(--rice);
+  --bg-tint: var(--paper);
+  --surface: var(--rice);
+  --crimson: var(--cinnabar);
+  --crimson-deep: var(--cinnabar-deep);
+  --gold: var(--glaze);
+  --gold-bright: var(--glaze-bright);
+  --hairline: var(--rule);
+  --hairline-strong: var(--rule-strong);
+  --ink-invert: var(--rice-text);
+  --ink-invert-dim: var(--rice-dim);
+  --panel-dark: var(--ink-ground);
+  --panel-dark-raise: var(--ink-raise);
+
+  /* ── 字体栈 ──
+     全站统一书法气质:霞鹜文楷为默认正文,马善政毛笔为大标题。
+     serif / sans 均映射到 kai,避免黑体、宋体混用。 */
+  --font-brush: "Ma Shan Zheng Display", "LXGW WenKai Screen", "Kaiti SC", serif;
+  --font-kai: "LXGW WenKai Screen", "Kaiti SC", "STKaiti", "Noto Serif SC", serif;
+  --font-serif: var(--font-kai);
+  --font-sans: var(--font-kai);
+  --font-en: "LXGW WenKai Screen", "Cormorant Garamond", "Kaiti SC", serif;
+
+  /* ── 纹理 ──
+     宣纸颗粒与绢丝织纹用 data-uri,不额外发请求 */
+  --texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+
+@theme inline {
+  --color-ink-ground: var(--ink-ground);
+  --color-ink-raise: var(--ink-raise);
+  --color-ink-deep: var(--ink-deep);
+
+  --color-rice: var(--rice);
+  --color-paper: var(--paper);
+  --color-paper-deep: var(--paper-deep);
+
+  --color-cinnabar: var(--cinnabar);
+  --color-cinnabar-deep: var(--cinnabar-deep);
+  --color-vermilion: var(--vermilion);
+  --color-glaze: var(--glaze);
+  --color-glaze-bright: var(--glaze-bright);
+  --color-mineral-blue: var(--mineral-blue);
+  --color-mineral-green: var(--mineral-green);
+  --color-violet-muted: var(--muted-violet);
+
+  --color-ink: var(--ink);
+  --color-ink-dim: var(--ink-dim);
+  --color-ink-faint: var(--ink-faint);
+  --color-rice-text: var(--rice-text);
+  --color-rice-dim: var(--rice-dim);
+  --color-rice-faint: var(--rice-faint);
+
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-rule-invert: var(--rule-invert);
+  --color-rule-invert-strong: var(--rule-invert-strong);
+
+  /* 旧名映射,过渡期保留 */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-crimson: var(--cinnabar);
+  --color-crimson-deep: var(--cinnabar-deep);
+  --color-gold: var(--glaze);
+  --color-hairline: var(--rule);
+  --color-hairline-strong: var(--rule-strong);
+  --color-ink-invert: var(--rice-text);
+
+  --font-brush: var(--font-brush);
+  --font-kai: var(--font-kai);
+  --font-serif: var(--font-kai);
+  --font-sans: var(--font-kai);
+  --font-en: var(--font-en);
+}
+
+html {
+  color-scheme: light;
+  overflow-x: hidden;
+}
+
+html,
+body {
+  overscroll-behavior-x: none;
+}
+
+body {
+  background: var(--rice);
+  color: var(--ink);
+  font-family: var(--font-kai);
+  font-size: 15px;
+  line-height: 1.75;
+  letter-spacing: 0.04em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--cinnabar);
+  color: var(--rice);
+}
+
+/* 滚动条:朱砂细线,不做圆角药丸 */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--cinnabar) 46%, transparent);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cinnabar);
+}
+
+/* ============================================================
+   字体语义类
+   ============================================================ */
+
+/* 毛笔楷书大字。字距收紧,笔画本身已有呼吸 */
+.brush {
+  font-family: var(--font-brush);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+}
+
+/* 霞鹜文楷:全站正文、导航、说明 */
+.kai {
+  font-family: var(--font-kai);
+  line-height: 1.85;
+  letter-spacing: 0.05em;
+}
+
+/* 展签副题:楷体 + 宽字距 */
+.en-caption {
+  font-family: var(--font-kai);
+  letter-spacing: 0.22em;
+  font-size: 0.92em;
+}
+
+/* 英文/双语副标题 */
+.en-title {
+  font-family: var(--font-en);
+  letter-spacing: 0.08em;
+}
+
+/* 中文展签:楷体 + 松字距,匾额感 */
+.plaque-text {
+  font-family: var(--font-kai);
+  letter-spacing: 0.28em;
+}
+
+/* 竖排:题签、箴言 */
+.vertical {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: 0.22em;
+}
+
+/* 数据与编号:仍用楷体,保持全站统一 */
+.datum {
+  font-family: var(--font-kai);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+}
+
+/* Tailwind font-serif / font-sans 统一回落楷体 */
+.font-serif,
+.font-sans {
+  font-family: var(--font-kai);
+}
+
+/* ============================================================
+   材质:宣纸面 / 玄墨面 / 绢面
+   ============================================================ */
+
+/* 宣纸卡:实底 + 颗粒 + 一道硬细线,不用磨砂和大圆角 */
+.paper-card {
+  position: relative;
+  background: var(--rice);
+  border: 1px solid var(--rule);
+  box-shadow: 0 18px 48px -24px rgba(23, 18, 15, 0.45);
+}
+.paper-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: var(--texture-grain);
+  background-size: 220px 220px;
+}
+
+/* 玄墨卡:深底 + 描金细线,用于照片/暗背景上。
+   注意:这是「容器」类,别用在 <span> 上 —— span 是 inline 盒,
+   backdrop-filter 在 inline 上不生效,会渲染成一块死黑。 */
+.ink-card {
+  position: relative;
+  background: color-mix(in srgb, var(--ink-ground) 88%, transparent);
+  border: 1px solid var(--rule-invert);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--rice-text);
+}
+
+/* 绢面:极细斜织纹,长卷与题签底用 */
+.silk {
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      rgba(28, 21, 18, 0.028) 0 1px,
+      transparent 1px 3px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(28, 21, 18, 0.022) 0 1px,
+      transparent 1px 3px
+    );
+}
+
+/* 颗粒叠加(配合任意定位容器) */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.055;
+  background-image: var(--texture-grain);
+  background-size: 220px 220px;
+}
+
+/* ============================================================
+   界线与纹样
+   ============================================================ */
+
+/* 双线细边:内外两道,匾额与图例用 */
+.double-rule {
+  border: 1px solid var(--rule-strong);
+  outline: 1px solid var(--rule);
+  outline-offset: 3px;
+}
+.double-rule-invert {
+  border: 1px solid var(--rule-invert-strong);
+  outline: 1px solid var(--rule-invert);
+  outline-offset: 3px;
+}
+
+/* 朱砂发丝线:替代原先的渐变金线 */
+.rule-cinnabar {
+  height: 1px;
+  background: color-mix(in srgb, var(--cinnabar) 72%, transparent);
+}
+
+/* 回纹带:方折雷纹,做分隔与边饰 */
+.meander {
+  height: 8px;
+  background-repeat: repeat-x;
+  background-size: 24px 8px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 7h3V1h7v5h4V1h7v6h3' fill='none' stroke='%23b5232b' stroke-width='1' stroke-opacity='0.5'/%3E%3C/svg%3E");
+}
+.meander-invert {
+  height: 8px;
+  background-repeat: repeat-x;
+  background-size: 24px 8px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 7h3V1h7v5h4V1h7v6h3' fill='none' stroke='%23e0b84e' stroke-width='1' stroke-opacity='0.55'/%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   交互:导航与链接的下划线从中心展开(不用圆角药丸背景)
+   ============================================================ */
+
+.rule-hover {
+  position: relative;
+}
+.rule-hover::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  height: 1px;
+  width: 0;
+  translate: -50% 0;
+  background: var(--cinnabar);
+  transition: width 0.42s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.rule-hover:hover::after,
+.rule-hover[data-active="true"]::after {
+  width: 100%;
+}
+
+/* ============================================================
+   动效
+   ============================================================ */
+
+/* 朱砂点呼吸 */
+@keyframes cinnabar-breathe {
+  0%,
+  100% {
+    opacity: 0.66;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.14);
+  }
+}
+.breathe {
+  animation: cinnabar-breathe 3.2s ease-in-out infinite;
+}
+
+/* 墨迹洇开:题跋文字逐字浮现时的底噪 */
+@keyframes ink-bleed {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .breathe {
+    animation: none;
+  }
+  .rule-hover::after {
+    transition: none;
+  }
+}
