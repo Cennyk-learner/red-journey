@@ -21,10 +21,8 @@ import { useReducedMotion } from "@/lib/motion";
 // 滚动只负责淡入与轻微抬升,不改变画幅形状。
 // ============================================================
 
-const VIDEO_SRC = withBasePath("/team/test-vid.mp4");
-const VIDEO_POSTER = withBasePath(
-  "/spots/deng-xiaoping-former-residence/01.jpg",
-);
+const VIDEO_SRC = withBasePath("/film/practice-reel.mp4");
+const VIDEO_POSTER = withBasePath("/team/hero-poster.jpg");
 
 function ShowcaseVideo({
   videoRef,

@@ -1,4 +1,5 @@
 import { withBasePath } from "@/lib/base-path";
+import { PHOTO_FIELD_THUMBS } from "./photo-field-thumbs";
 import { SPOT_IMAGE_MANIFEST } from "./spot-images";
 
 const CITY_VISTAS = [
@@ -10,9 +11,14 @@ const CITY_VISTAS = [
   "/cities/baise/scenery.webp",
 ];
 
+function fieldAsset(url: string): string {
+  const thumb = PHOTO_FIELD_THUMBS[url];
+  return withBasePath(thumb ?? url);
+}
+
 /**
  * Diverse image pool for the intro PhotoField rings.
- * Pulls city vistas + staggered picks from each spot manifest (no duplicates).
+ * Uses pre-baked 640px WebP thumbs when available (see build-photo-field-thumbs.py).
  */
 export function getPhotoFieldImages(): string[] {
   const seen = new Set<string>();
@@ -20,10 +26,10 @@ export function getPhotoFieldImages(): string[] {
 
   const add = (url: string | undefined) => {
     if (!url) return;
-    const prefixed = withBasePath(url);
-    if (seen.has(prefixed)) return;
-    seen.add(prefixed);
-    out.push(prefixed);
+    const resolved = fieldAsset(url);
+    if (seen.has(resolved)) return;
+    seen.add(resolved);
+    out.push(resolved);
   };
 
   for (const url of CITY_VISTAS) add(url);
@@ -37,4 +43,9 @@ export function getPhotoFieldImages(): string[] {
   }
 
   return out;
+}
+
+/** Indices loaded first — inner ring tiles (9 photos). */
+export function getPhotoFieldPriorityCount(): number {
+  return 9;
 }
