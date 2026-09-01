@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, type ReactNode } from "react";
 import TiltedTiles from "@/components/effects/tilted-tiles";
+import { FilmShowcase } from "@/components/journey/film-showcase";
 import { MeanderRule } from "@/components/ornament";
 import { Nav } from "@/components/nav";
 import { getGalleryImages } from "@/data/gallery-images";
@@ -14,7 +15,8 @@ export function GalleryExperience(): ReactNode {
   const images = useMemo(() => getGalleryImages(), []);
 
   return (
-    <div className="relative h-[100svh] overflow-hidden bg-ink-deep">
+    <div className="bg-ink-deep">
+      <div className="relative h-[100svh] overflow-hidden bg-ink-deep">
       <Nav tone="rice" mapHref="/" />
 
       <div className="pointer-events-none absolute inset-x-0 top-[5.5rem] z-20 px-6 text-center sm:px-10">
@@ -61,10 +63,16 @@ export function GalleryExperience(): ReactNode {
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20">
         <MeanderRule tone="glaze" />
-        <p className="kai pb-6 text-center text-[11px] tracking-[0.18em] text-rice-faint">
+        <p className="kai pb-2 text-center text-[11px] tracking-[0.18em] text-rice-faint">
           {images.length} {t(ui.galleryPhotoCountSuffix, locale)}
         </p>
+        <p className="kai pb-6 text-center text-[10px] tracking-[0.22em] text-rice-faint/80">
+          {t(ui.galleryScrollDown, locale)}
+        </p>
       </div>
+      </div>
+
+      <FilmShowcase />
     </div>
   );
 }

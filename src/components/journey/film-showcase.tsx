@@ -27,7 +27,7 @@ const VIDEO_POSTER = withBasePath("/team/hero-poster.jpg");
 
 function ShowcaseVideo({
   videoRef,
-  controls = false,
+  controls = true,
   label,
 }: {
   videoRef: RefObject<HTMLVideoElement | null>;
@@ -40,7 +40,6 @@ function ShowcaseVideo({
       className="h-full w-full object-cover"
       src={VIDEO_SRC}
       poster={VIDEO_POSTER}
-      muted
       loop
       playsInline
       controls={controls}
@@ -78,7 +77,14 @@ export function FilmShowcase({ cityId }: { cityId?: string }): ReactNode {
       (entries) => {
         const on = entries[0]?.isIntersecting ?? false;
         if (on) {
-          if (video.paused) void video.play().catch(() => undefined);
+          video.muted = false;
+          if (video.paused) {
+            void video.play().catch(() => {
+              // Autoplay with sound is often blocked — fall back to muted play
+              video.muted = true;
+              void video.play().catch(() => undefined);
+            });
+          }
         } else if (!video.paused) {
           video.pause();
         }
@@ -120,7 +126,7 @@ export function FilmShowcase({ cityId }: { cityId?: string }): ReactNode {
         >
           <ShowcaseVideo
             videoRef={videoRef}
-            controls={prefersReducedMotion}
+            controls
             label={caption}
           />
           {/* 四角极淡的绢纹遮罩感 */}
