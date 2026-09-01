@@ -68,6 +68,7 @@ export const ui = {
     en: "Fieldwork film — shot in Guang'an and Baise, Jul–Aug 2026",
   } as Dict,
   filmScrollDown: { zh: "继续下滑", en: "Scroll down" } as Dict,
+  galleryScrollDown: { zh: "向下继续翻阅", en: "Keep scrolling" } as Dict,
 
   // 详情抽屉
   drawerVisitInfo: { zh: "到访信息", en: "Visit details" } as Dict,
