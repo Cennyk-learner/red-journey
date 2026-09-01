@@ -34,6 +34,11 @@ jobs:
       - name: Resolve Pages base path
         id: base
         run: |
+          # Custom domain (public/CNAME) is served from site root — no /repo prefix.
+          if [ -f public/CNAME ]; then
+            echo "path=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           REPO="${{ github.event.repository.name }}"
           OWNER="${{ github.repository_owner }}"
           if [ "$REPO" = "${OWNER}.github.io" ]; then
