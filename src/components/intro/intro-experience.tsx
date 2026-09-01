@@ -12,7 +12,7 @@ import { getSpotsByCity } from "@/data/spots";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { ui, t } from "@/i18n/ui";
 import { EASE_OUT_EXPO } from "@/lib/motion";
-import { preloadImage, preloadJourneyChunks } from "@/lib/preload-journey";
+import { preloadImage, preloadJourneyChunks, preloadPhotoFieldImages } from "@/lib/preload-journey";
 import { bgStack } from "@/lib/images";
 import type { City } from "@/data/types";
 
@@ -76,6 +76,8 @@ export function IntroExperience({
   const [fieldReady, setFieldReady] = useState(false);
 
   useEffect(() => {
+    preloadPhotoFieldImages();
+
     const idle = (cb: () => void) => {
       if (typeof requestIdleCallback === "function") {
         requestIdleCallback(cb, { timeout: 2500 });

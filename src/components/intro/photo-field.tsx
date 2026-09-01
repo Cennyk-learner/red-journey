@@ -10,7 +10,10 @@ import {
   type RefObject,
 } from "react";
 import * as THREE from "three";
-import { getPhotoFieldImages } from "@/data/photo-field-images";
+import {
+  getPhotoFieldImages,
+  getPhotoFieldPriorityCount,
+} from "@/data/photo-field-images";
 import { useReducedMotion, EASE_OUT_EXPO } from "@/lib/motion";
 
 // ============================================================
@@ -25,6 +28,8 @@ import { useReducedMotion, EASE_OUT_EXPO } from "@/lib/motion";
 
 const FIELD_IMAGES = getPhotoFieldImages();
 const IMAGE_COUNT = Math.max(FIELD_IMAGES.length, 1);
+const PRIORITY_COUNT = Math.min(getPhotoFieldPriorityCount(), IMAGE_COUNT);
+const LOAD_CONCURRENCY = 4;
 
 type Ring = {
   radiusVmax: number;
@@ -356,37 +361,66 @@ export function PhotoField({ hidden, className }: PhotoFieldProps): ReactNode {
   const hiddenRef = useRef(hidden);
   hiddenRef.current = hidden;
 
-  // 预载并降采样:原图最大 2560px,整幅直接上传 GPU 会卡主线程;
-  // decode() 异步解码后缩到 ≤640px 画布(显示尺寸上限 236px,足够)。
-  // 串行逐张处理:11 张并行解码会抢满线程池,挤掉入场动画的帧
+  // 预载纹理:优先内圈 9 张,其余并发限流;已烘焙的 WebP 直接上传,不再运行时缩放
   useEffect(() => {
     let cancelled = false;
     const MAX_TEX = 640;
-    void (async () => {
-      for (let i = 0; i < FIELD_IMAGES.length; i++) {
-        if (cancelled) return;
-        if (sourcesRef.current[i]) continue;
-        const img = new window.Image();
-        img.src = FIELD_IMAGES[i] ?? "";
-        try {
-          await img.decode();
-        } catch {
-          continue;
-        }
-        if (cancelled) return;
-        const scale = Math.min(
-          1,
-          MAX_TEX / Math.max(img.naturalWidth, img.naturalHeight, 1)
-        );
-        const cv = document.createElement("canvas");
-        cv.width = Math.max(1, Math.round(img.naturalWidth * scale));
-        cv.height = Math.max(1, Math.round(img.naturalHeight * scale));
-        cv.getContext("2d")?.drawImage(img, 0, 0, cv.width, cv.height);
-        sourcesRef.current[i] = cv;
-        // 每张之间让出一帧,缩放绘制不连续占用主线程
-        await new Promise((r) => requestAnimationFrame(r));
+
+    const loadOne = async (index: number): Promise<void> => {
+      if (cancelled || sourcesRef.current[index]) return;
+      const src = FIELD_IMAGES[index] ?? "";
+      if (!src) return;
+
+      const img = new window.Image();
+      img.src = src;
+      try {
+        await img.decode();
+      } catch {
+        return;
       }
+      if (cancelled) return;
+
+      const isBakedThumb = src.includes("/photo-field/");
+      if (isBakedThumb) {
+        const cv = document.createElement("canvas");
+        cv.width = img.naturalWidth;
+        cv.height = img.naturalHeight;
+        cv.getContext("2d")?.drawImage(img, 0, 0);
+        sourcesRef.current[index] = cv;
+        return;
+      }
+
+      const scale = Math.min(
+        1,
+        MAX_TEX / Math.max(img.naturalWidth, img.naturalHeight, 1)
+      );
+      const cv = document.createElement("canvas");
+      cv.width = Math.max(1, Math.round(img.naturalWidth * scale));
+      cv.height = Math.max(1, Math.round(img.naturalHeight * scale));
+      cv.getContext("2d")?.drawImage(img, 0, 0, cv.width, cv.height);
+      sourcesRef.current[index] = cv;
+    };
+
+    const order = [
+      ...Array.from({ length: PRIORITY_COUNT }, (_, i) => i),
+      ...Array.from(
+        { length: IMAGE_COUNT - PRIORITY_COUNT },
+        (_, i) => i + PRIORITY_COUNT
+      ),
+    ];
+
+    void (async () => {
+      let cursor = 0;
+      const workers = Array.from({ length: LOAD_CONCURRENCY }, async () => {
+        while (!cancelled) {
+          const index = order[cursor++];
+          if (index === undefined) break;
+          await loadOne(index);
+        }
+      });
+      await Promise.all(workers);
     })();
+
     return () => {
       cancelled = true;
     };

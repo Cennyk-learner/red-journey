@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "fonts": "python scripts/build-fonts.py"
+    "fonts": "python scripts/build-fonts.py",
+    "photo-field": "python scripts/build-photo-field-thumbs.py"
   },
   "dependencies": {
     "@fontsource/cormorant-garamond": "^5.3.0",
