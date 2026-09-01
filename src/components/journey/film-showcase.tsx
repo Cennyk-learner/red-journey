@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "motion/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   useEffect,
   useRef,
@@ -63,6 +64,10 @@ export function FilmShowcase({ cityId }: { cityId?: string }): ReactNode {
   });
   const opacity = useTransform(scrollYProgress, [0, 1], [0.35, 1]);
   const y = useTransform(scrollYProgress, [0, 1], [48, 0]);
+
+  useEffect(() => {
+    ScrollTrigger.refresh();
+  }, []);
 
   useEffect(() => {
     if (prefersReducedMotion) return;
