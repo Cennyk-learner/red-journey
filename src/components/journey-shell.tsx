@@ -30,8 +30,6 @@ export function JourneyShell(): ReactNode {
   const [stage, setStage] = useState<Stage>({ name: "intro" });
   const [introScenic, setIntroScenic] = useState(false);
 
-  const [journeyTailReady, setJourneyTailReady] = useState(false);
-
   const resetScrollTop = useCallback(() => {
     scrollTo(0, { immediate: true });
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
@@ -50,7 +48,6 @@ export function JourneyShell(): ReactNode {
       requestAnimationFrame(resetScrollTop);
     }
     if (stage.name === "journey") {
-      setJourneyTailReady(false);
       if (window.location.hash) {
         history.replaceState(
           null,
@@ -157,14 +154,9 @@ export function JourneyShell(): ReactNode {
               cityId={stage.cityId}
               onOpenSpot={open}
               onBack={() => setStage({ name: "intro" })}
-              onScrollReady={() => setJourneyTailReady(true)}
             />
-            {journeyTailReady && (
-              <>
-                <FilmShowcase cityId={stage.cityId} />
-                <Footer />
-              </>
-            )}
+            <FilmShowcase cityId={stage.cityId} />
+            <Footer />
           </motion.div>
         ) : (
           <motion.div
