@@ -83,6 +83,18 @@ export const TEAM_GUANGAN: TeamMember[] = [
     isCaptain: true,
   },
   {
+    id: "du-bingfeng",
+    name: { zh: "杜秉峰", en: "Du Bingfeng" },
+    role: { zh: "权威媒体联络", en: "Press Liaison" },
+    motto: {
+      zh: "言出有信，行必有果",
+      en: "Speak with trust; act to deliver.",
+    },
+    avatar: "/team/avatars/du-bingfeng.jpg",
+    group: "guangan",
+    cities: ["guangan"],
+  },
+  {
     id: "lin-yi",
     name: { zh: "林一", en: "Lin Yi" },
     role: { zh: "留学生", en: "International Student" },
@@ -200,15 +212,20 @@ function sortByName(members: TeamMember[]): TeamMember[] {
   return [...members].sort((a, b) => a.name.en.localeCompare(b.name.en));
 }
 
-/** 指导老师 → 队长 → 广安队员（字母序）→ 百色队员（字母序） */
+/** 指导老师 → 队长 → 权威媒体联络 → 广安队员（字母序）→ 百色队员（字母序） */
 for (const member of [...TEAM_ADVISORS, ...TEAM_GUANGAN, ...TEAM_BAISE]) {
   member.avatar = withBasePath(member.avatar);
 }
 
+const AFTER_CAPTAIN_IDS = new Set(["du-bingfeng"]);
+
 export const TEAM_ALL: TeamMember[] = [
   ...TEAM_ADVISORS,
   ...TEAM_GUANGAN.filter((m) => m.isCaptain),
-  ...sortByName(TEAM_GUANGAN.filter((m) => !m.isCaptain)),
+  ...TEAM_GUANGAN.filter((m) => AFTER_CAPTAIN_IDS.has(m.id)),
+  ...sortByName(
+    TEAM_GUANGAN.filter((m) => !m.isCaptain && !AFTER_CAPTAIN_IDS.has(m.id)),
+  ),
   ...sortByName(TEAM_BAISE),
 ];
 
