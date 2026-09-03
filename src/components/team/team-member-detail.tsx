@@ -33,8 +33,8 @@ function memberCityLabel(
   const inBaise = cities.includes("baise");
 
   if (inGuangan && inBaise) return t(ui.teamDualCity, locale);
-  if (member.group === "guangan" || inGuangan) return t(ui.teamGuanganCity, locale);
-  if (member.group === "baise" || inBaise) return t(ui.teamBaiseCity, locale);
+  if (inGuangan) return t(ui.teamGuanganCity, locale);
+  if (inBaise) return t(ui.teamBaiseCity, locale);
   return null;
 }
 

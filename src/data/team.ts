@@ -92,7 +92,6 @@ export const TEAM_GUANGAN: TeamMember[] = [
     },
     avatar: "/team/avatars/du-bingfeng.jpg",
     group: "guangan",
-    cities: ["guangan"],
   },
   {
     id: "lin-yi",
@@ -231,9 +230,7 @@ export const TEAM_ALL: TeamMember[] = [
 
 /** 详情页展示:与该城实践相关的成员头像 */
 export function getTeamForCity(cityId: "guangan" | "baise"): TeamMember[] {
-  return TEAM_ALL.filter(
-    (m) => m.group === cityId || m.cities?.includes(cityId),
-  );
+  return TEAM_ALL.filter((m) => m.cities?.includes(cityId));
 }
 
 export const PROJECT_INFO = {
